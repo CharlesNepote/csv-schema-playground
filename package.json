@@ -1,0 +1,13 @@
+{
+  "name": "csv-schema-playground",
+  "description": "CSV Schema Playground",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "express-nedb-rest": "1.2.x",
+    "cors": "2.8.x"
+  }
+}

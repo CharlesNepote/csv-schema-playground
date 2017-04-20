@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="fr">
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Those three metas recommanded by http://gethead.info/ -->
+
+<title>Générateur de documentation Table Schema</title>
+<!-- Name of web application (only should be used if the website is used as an app) -->
+<meta name="application-name" content="CSV Documentor">
+<!-- In some situations this description (150 car.) is shown in the search results. -->
+<!-- meta name="description" content="A description of the page" -->
+<meta name="author" content="Charles Nepote, charles.nepote@fing.org">
+<meta name="twitter:creator" content="@CharlesNepote">
+<!-- Simplified BSD License -->
+<link rel="license" href="https://opensource.org/licenses/BSD-2-Clause">
+
+<!-- INFO: 12 queries, 1175 Kb (!): jsPDF (588), CodeMirror (350), jQuery (90) -->
+
+<!-- Changelog: see readme.md
+
+
+TODO:
+* [4] write readme.md english/french
+* [3] more english translations
+* [6] better UI: see Wikipedia, Github, conversion sites,
+  * accordion? https://jqueryui.com/accordion/#fillspace
+* [5] publish on Github after [3], [4] done.
+
+* vx
+  * web service to store Data
+    * { schema } + datetime (ISO 8601) + status (stable|draft) + uri + _previous (last uri)
+      * drafts older than 3 months are deleted
+      * UI lists stable schemas by "Title", "Author", "version", order by "created" (might not exists)?
+      * UI lists draft schemas
+      * saveSchema(schemaWS_URL, status, importedSchemaURI)
+
+* v2  //////////////////////////////////////////
+  * see CSV Lint API and create csvLint function: http://csvlint.io/documentation
+    * https://github.com/theodi/csvlint/issues/280
+  * 3h : sauvegarder le schéma sur le serveur et l'exposer via une URI stable
+  * read schema from github and push/pull request to github or gist
+    - https://developer.github.com/v3/gists/
+    - https://www.npmjs.com/package/gists
+    - https://github.com/MatthewMueller/gist
+    - https://stackoverflow.com/questions/37516379/github-gist-api-creating-gists-with-special-characters
+  * compléter l'introduction de l'outil
+  * [7] document schema.css
+  * revoir la spec Tabular Data Package et afficher plus de documentation
+    * https://specs.frictionlessdata.io/tabular-data-package/
+    * http://csvlint.io/about#how_write_schema
+    * 2h ? écrire une proposition de spec ici :
+      * https://github.com/frictionlessdata/specs/blob/master/content/patterns/contents.lr
+      * http://specs.frictionlessdata.io/patterns/
+
+
+* V3
+  * [ ] readme.md pour publier ensuite son schéma sur github ?
+  * [ ] documentation PDF - cf https://rawgit.com/MrRio/jsPDF/master/
+  * ouvrir les regexp dans un autre service pour les tester ???
+  * + markdown : https://code.google.com/archive/p/pagedown/wikis/PageDown.wiki
+    * https://cdnjs.com/libraries/pagedown
+    * http://stackoverflow.com/a/40066280/4098096
+    * <script src="https://cdnjs.cloudflare.com/ajax/libs/pagedown/1.0/Markdown.Converter.min.js"</scrip>
+      var converter = new Markdown.Converter();
+      document.write(converter.makeHtml("**I am bold!**"));
+
+-->
+<link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAANOgAADMQBiN+4gQAAAAd0SU1FB9gKGQ8sMEGsKGkAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAEBUlEQVRIx62V22tdRRTGf7Nn73P2ybntnNOe3NqkPTGgLTVUUZF6QatSLOKTPgqCIqLgQ0H/A1sQQbBYCBb1QfAxiC8tSO1FqHkwJVKtjdTGNraUmObsc9nXmfGh7cGYpM1D5nHWzPetteZb3wg2eB2YqYm4zSadsMtoboiNBH/3TE0awx6j+MRoxoTg/IYRvP19TQrJS0bzhdHGSyKFkLTtjSKwMjyiEz43ynhtP6bdjBCWyFobAf7eT7VhNF/q1FRbjYjmUohlCVPwnB+6FUxMTJipqSmUUhhjEGKd3bMT4ks/Y6oLBK2Yth8hHYtCJXOix7Nf7xLMzc0xOzvLzp078TyPNE3viW3QJPXzhNWbxFFKHCmMhoLn/FHodd48vGfhapdAacXQlkFK5dL6wIUm6fuTZPuvqDQhaMUYYyiVyuQr6rXDexYuAdi3tSv1ZJNs/R/CaszzT+1na88uXFnCEnJVgivBNN8uTJKmHQI/ptOOcXNZzMz9mOqFs90OHpipWcYwlo5P4ebnuOkrvr5wgrH+h3im7y36MzuwRXYZeKha/OhP0EkadFoxQSdGSotedR/+XwMc2XvKdNUFOFqZx6LKZWIiwjgkikNmLp/hm8sH+K1zjFTHXfBYdTi+eJArzXM0GxFxoBDCopLvo/fqEwi1XPkWkGqjFo2TgB1jOYZUKZTS/D1/ncmLh7jon0IbRWoiTi59ymzzJEEQE3cStNZsGxqlfPE57MBbOR8fP3hDGalOO9fq2DlBvmZw8xa2IxACGn6TydlD/O6f5OzSV/zif0cYhLQaEXGkKBbz7Ov/AOlXV1cxgBJRI3fuSTrpTawt18kWIZN1CFuaONI0w0WOXfsI43YIggh/KUSlhqxrMz74AkOZcWBm9QkH+Gw8NDLuITi+m0yzhluSyJzBLcpblUhFxywSRAEtPwQjsKVN30CNh0uvYuOubSHLtN3J0TO1j0pmBNuFbFWRK0gyPRZpktL2I5JQkclKakNlnh54g6ocvevUr/Ai2a7wineEkcJupA3S1Wg0nVZM2E6wbEF5U5G9Q++wI7sfR7h3N8HVNstykBfzH+KJEZwiWD0aIwxCgJ0R1Mu7GXOeJSuK93bZtQIle4D9pUNU5DC5jEsu55AvZakM5NicGyEj8uuz8bUCQgj67QfY671P3vEoeC69gy695U1U7NG7XV0pUwBjDJa1/JJlWWxzHuflzQe5FJ/GsgUVuZ2t8lEkTvfc0aNHb72flBhjVicQQqCUuvM3/M+WDVguWBrMVdDXEGZlBVEUrVCU9d9s5+fnaTQa2PZyPxEIhJaI1EEoZwX4ncynp6fXrmB4eJjR0VFarRbNZnP9P9rt9gohqNVq1Ov1ZbF/AZGev3hLJ2/zAAAAAElFTkSuQmCC">
+
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+<!-- codemirror: https://codemirror.net/index.html -->
+<!--script src="lib/codemirror.js"></script>
+<script src="mode/javascript/javascript.js"></script>
+<link rel="stylesheet" href="lib/codemirror.css" -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/codemirror.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/mode/javascript/javascript.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/addon/edit/matchbrackets.min.js"></script>
+<script src="https://rawgit.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/addon/lint/lint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/addon/lint/json-lint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/addon/display/fullscreen.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dynatable/0.3.1/jquery.dynatable.min.css">
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+
+
+<script>
+  $( function() {
+
+    var schemaWS_URL = "http://127.0.0.1:8100/schemas"; // URL of the webservice
+    var isContentModified = false;  // This variable will be set to true if content have been modified.
+    var importedSchema;             // Object: initial schema or initial state of imported schema
+    importedSchema = normaliseSchema(JSON.parse($("#data").val()));
+
+    // Language management
+    function setLang(e) {
+      $('html').attr('lang', $(e.target).val());
+    }
+
+
+    /* JSON editor handling with CodeMirror: https://codemirror.net/
+    */
+    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("data"), {
+      //mode: { name: "javascript", json: true },
+      //theme: "",
+      mode: "application/json",
+      gutters: ["CodeMirror-lint-markers"],
+      lineNumbers: true,
+      lineWrapping: true,        // soft wrap
+      lint: true,                // plug-in to highlight JSON errors
+      styleActiveLine: true,     // plug-in to highlight active line
+      matchBrackets: true,       // plug-in to highlight matching brackets
+      extraKeys: {
+        "F11": function(cm) {    // fullscreen ; see corresponding css rules
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+          $("#reduce").css("display", "block"); // add "reduce" button
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+          $("#reduce").css("display", "none");
+        }
+        /*{
+          "F11": fullScreen(),
+          "Esc": reduce()*/
+        }
+    });
+
+    function reduce() {
+      myCodeMirror.setOption("fullScreen", false);
+      $("#reduce").css("display", "none");
+    }
+
+    function fullScreen () {
+      if (myCodeMirror.getOption("fullScreen")) {
+        $("#reduce").css("display", "none");
+        myCodeMirror.setOption("fullScreen", false);
+      } else {
+        $("#reduce").css("display", "block"); // add "reduce" button
+        myCodeMirror.setOption("fullScreen", !myCodeMirror.getOption("fullScreen"));
+      }
+    }
+
+
+    // render HTML and preview it
+    function process() {
+      console.log("process() 1");
+      myCodeMirror.save(); // Copy the content of the CodeMirror editor into the textarea.
+      var context, htmlRendered;
+      var source   = $("#entry-template").html();   // Template (see end of file)
+      var template = Handlebars.compile(source);
+      try {
+        context = JSON.parse($('#data').val());
+      } catch (e) {
+        window.alert(e);                            // Alert if invalid JSON
+      }
+
+      // Manage { "schema": { "title": "My spec" } } instead of { "title": "My spec" }
+      if (typeof context.schema !== "undefined") { // { "schema": { "title": "My title" } }
+        context = context.schema;
+      }
+
+      htmlRendered = template(context);             // Handlebars rendering
+      $('#result').html( htmlRendered );            // HTML rendering
+      $('#result_zone').show();                          // Show result
+    }
+
+    escape = function (str) {
+      // TODO: escape %x75 4HEXDIG ?? chars
+      return str
+        .replace(/[\\]/g, '\\\\')
+        .replace(/[\"]/g, '\\"')
+        .replace(/[\/]/g, '\\/')
+        .replace(/[\b]/g, '\\b')
+        .replace(/[\f]/g, '\\f')
+        .replace(/[\n]/g, '\\n')
+        .replace(/[\r]/g, '\\r')
+        .replace(/[\t]/g, '\\t');
+    };
+
+
+    var anonymousGistUrl = "";
+    var userGistUrl = "";
+    var currentSchemaUrl;
+    function uploadGist() {
+      myCodeMirror.save(); // Copy CodeMirror editor content into the textarea
+      var uploadURL = "https://api.github.com/gists";
+      var myJSONString = escape($('#data').val());
+      console.log(myJSONString);
+      var jsondata = {};
+      jsondata.description = "Test";
+      jsondata.public = true;
+      jsondata.files = JSON.parse('{"schema.json": {"content": "'+ myJSONString + '"}}');
+      console.log(jsondata);
+      if (userGistUrl !== "") {
+        // Update previous gist: https://developer.github.com/v3/gists/#edit-a-gist
+        // !!!!!!!! Anonymous gists can't be modified
+        $.ajax({
+          type: "PATCH", url: anonymousGistUrl, contentType: "application/json", dataType: "json",
+          data: JSON.stringify(jsondata)
+        })
+        .done(function(response) {
+          console.log(response);
+          console.log(response.html_url);
+          $('#schemaImportUrl').val(response.html_url);
+          window.alert("Updated gist: " + response.html_url);
+        })
+        .error( function(e) {
+          console.warn("gist update error", e);
+        });/* */
+      }
+      else {
+        // Create a brand new gist, see: https://developer.github.com/v3/gists/#edit-a-gist
+        $.ajax({
+          type: "POST", url: uploadURL, contentType: "application/json", dataType: "json",
+          data: JSON.stringify(jsondata)
+        })
+        .done(function(response) {
+          console.log(response);
+          console.log(response.html_url);
+          $('#schemaImportUrl').val(response.html_url);
+          anonymousGistUrl = uploadURL + "/" + response.id;
+          window.alert("New gist: " + response.html_url + "<br/>\n" +
+            "URL: " + response.files["schema.json"].raw_url);
+          return response.files["schema.json"].raw_url;
+        })
+        .error( function(e) {
+          console.warn("gist save error", e);
+        });/* */
+      }
+    }
+
+
+    /**
+    TODO
+    POST status (stable|draft) + (|drafturi) + (|_previous (last uri)) + { schema }
+    {
+      "_id": "1491294163310",                               // in NeDB, _id can be given by the application
+                                                            // so it can be a datetime or something else
+      "order": "237"                                        // could replace datetime for historical order?
+      "IP"
+      "uri": "./Liste_pr.draft.2017-04-03T12:01:40.057Z.json",   //
+      "uri": "./Liste_pr.draft.2017-04-03T12:01:40.json",        // shorter
+      "uri": "./Liste_pr.draft.20170403T120140.057Z"
+      "uri": "./qfOu-kyi"                                        // 8 chars
+      "_previousDraftURI": "./Liste_pr.draft.2017-04-03T09:01:40.057Z",
+                                                            // becomes the previous "uri" value when saved
+
+      "status": "draft",                                    // only change this status when publishing stable?
+                                                            // or change this status + create a nice uri ?
+      "drafturi": "http://127.0.0.1/test/1491294163310",    // for debugging purpose
+      "schema": {
+        "title": "Spécification de la liste annuelle des prénoms des nouveaux-nés",
+        "author": "Charles Nepote &lt;charles.nepote@fing.org&gt;",
+        "version": "0.6beta",                               // automatic? increment at dowload?
+        "created": "2017-03-28",                            // automatic? alert if not true (beware timezone)?
+        "description": "Blabla",
+        "homepage": "https://ex.com/prenom.html",           // ./#Liste_pr.draft.2017-04-03T12:01:40.html works
+                                                            // but homepage can be something else
+        "uri": "https://ex.com/prenom-schema2.json",        // automatic?
+                                                            //   NO if external file
+                                                            //   YES when saved, if not already provided?
+        "previous": "https://ex.com/prenom-schema.json",    // previous *stable* uri (to compare)
+                                                            // automatic when beginning modifications
+        "example": "https://ex.com/prenom.csv",
+        "fields": [ ]
+      }
+    }
+    */
+    function saveSchema(schemaWS_URL, status, importedSchema) {
+      console.log("========= saveSchema. 1");
+
+      // Stop if content hasn't been modified
+      if (status !== "external" && isContentModified === false) {
+        window.alert ("Doc non modifié"); console.log("saveSchema: content not modified");
+        return;
+      }
+
+      // return a normalised schema: { "schema" : {} }
+      var normalisedSchema = normaliseSchema(JSON.parse(myCodeMirror.getValue(" ")));
+
+      // quality control
+      if (status !== "external") {
+        var error = controlSchema(normalisedSchema);
+        if (error !== false) {
+          var schemaErrorBlock =
+            '<div class="confirm">\n' + '<div>\n' + error + '</div>\n' +
+            '<p class="fr question">Voulez vous poursuivre ?</p>\n' +
+            '<p class="en question">Continue?</p>\n' +
+            '</div>\n';
+          $(schemaErrorBlock).dialog({
+            modal: true,
+            width: 'auto',
+            buttons: {
+              OK: function () {
+                $(this).dialog('destroy');
+                saveItFinaly(schemaWS_URL, status, normalisedSchema);
+              },
+              Cancel: function () {
+                $(this).dialog('destroy');
+              }
+            }
+          });
+        }
+      } else {
+        saveItFinaly(schemaWS_URL, status, normalisedSchema);
+      }
+
+    }
+
+
+    function saveItFinaly(schemaWS_URL, status, importedSchema) {
+      // OK, start saving process
+      var jsondata = {};
+      jsondata._id = String($.now());
+      jsondata.status = status;
+
+      // If schema status is "stable"
+      if (status === "stable") {
+        // Create a new URI
+        jsondata.uri = urlencode(schema.title + "." + status + "." + ISOdate);
+        // TODO: do we have to dynamically change schema.uri value to jsondata.uri value?
+      }
+
+      // If schema status is "draft"
+      else if (status === "draft") {
+        jsondata.drafturi = schemaWS_URL + "/" + jsondata._id;
+      }
+
+      // If it's an external doc and it doesn't exit in the repo, save it. Example:
+      // https://gist.githubusercontent.com/CharlesNepote/686dd3f0da30b43c3c82c773ebd5c020/raw/
+      else if (status === "external") {
+        if (isExternalSchemaExists(importedSchema.schema.uri, schemaWS_URL) === false) {
+          console.log("saveSchema: external schema doesn't exist, save it");
+          jsondata.uri = importedSchema.schema.uri;
+        } else {
+          console.log("saveSchema: external schema exists, don\'t save");
+          return; // don't save it
+        }
+      }
+
+      // Is it a modified imported schema or a new one?
+      if (importedSchema.uri) {
+        // if previously imported shema is a draft save its uri under previousDraftURI
+        if (importedSchema.status === "draft") {
+          jsondata._previousDraftURI = importedSchema.schema.uri;
+        }
+        //jsondata._previousStableURI = importedSchema.schema.previous;
+      }
+
+      // add schema after metadata
+      jsondata.schema = importedSchema.schema;
+
+      // POST to web service
+      console.log('Saving ' + status + ' at ' + schemaWS_URL);
+      //console.log(JSON.stringify(jsondata));
+      $.ajax({
+        type: "POST", url: schemaWS_URL, contentType: "application/json", dataType: "json",
+        data: JSON.stringify(jsondata)
+      })
+      .done(function(response) {
+        console.log("Saving " + status + " schema. done\n");
+        console.log(response);
+        isContentModified = false; // Content is unmodified since this save
+      })
+      .error( function(e) {
+        console.warn("Saving " + status + " schema error:\n", e);
+      });/* */
+    }
+
+
+
+    /**
+     * function isExternalSchemaExists Test if an external schema already exists in the repository
+     * @param  {string}  url          URL of the schema
+     * @param  {string}  schemaWS_URL URL of the web service repository
+     * @return {Boolean}              true: the schema already exists
+     */
+    function isExternalSchemaExists (url, schemaWS_URL) {
+      var req = schemaWS_URL + '?$single&$filter=uri $eq ' + encodeURI(url);
+      // console.log("req: " + req);
+      var result;
+      $.getJSON(req)
+      .done (function (r) {        // schema exist!
+        console.log("isExternalSchemaExists: .done => " + JSON.stringify(r).substring(0,40));
+        result = true;
+      })
+      .fail (function (r) {
+        console.log("isExternalSchemaExists: .fail => " + JSON.stringify(r).substring(0,40));
+        result = false;
+      });
+      return result;
+    }
+
+
+    function controlSchema (schemaObject) {
+      // Controls before saving/publishing (also for drafts and externals or not?)
+      schema = normaliseSchema(schemaObject);
+      console.log("controlSchema ----- schema:" +
+        JSON.stringify(schema).substring(0,40));
+      var error = "";
+      // * Is "title" field exist?
+      if (typeof schema.schema.title === "undefined") {
+        error +=
+          '<p class="fr">⚠ Erreur : pas de titre du schema ("title")</p>\n' +
+          '<p class="en">⚠ Error: no "title" property</p>\n';
+      }
+      // * Is "created" field ok?
+      if (isSameDate(schema.schema.created, $.now()) === false) {
+        error +=
+        '<p class="fr">⚠ Alerte : la date de création "created" est différente d\'aujourd\'hui</p>\n' +
+        '<p class="en">⚠ Alert: "created" property is different from today</p>\n';
+      }
+      // * Is "version" field different from imported one?
+      if (schema.schema.version === importedSchema.schema.version) {
+        error +=
+        '<p class="fr">⚠ Alerte : le champ "version" est identique à la précédente version</p>\n' +
+        '<p class="en">⚠ Alert: "version" property is the same as previous version</p>\n';
+      }
+      console.log("controlSchema ----- error: \n" + error);
+      if (error === "") { return false; } else { return error; }
+    }
+
+
+
+    function isSameDate(date1, date2) {
+      console.log("isSameDate: date1 & date2: " + date1 + " -- " + date2);
+      date1 = new Date(date1); date2 = new Date(date2);
+      console.log("isSameDate: date1 & date2: " + date1 + " -- " + date2);
+      if (date1.setHours(0,0,0,0) === date2.setHours(0,0,0,0)) {
+        return true;
+      }
+      return false;
+    }
+
+
+
+    function listSavedSchemas () {
+      $.getJSON(schemaWS_URL)
+      .done(function(response) {
+        console.log("listSavedSchemas. 1");
+        //console.log(response);
+        $( "#listOfSchemas" ).empty();
+        /*$('#listOfSchemas').append(
+          '<thead class=""><tr>\n' +
+          '<th>Date</th><th>Titre</th>' +
+          '<th>Version</th><th>Auteur</th><th>Statut</th><th>...</th>\n' +
+          '</tr></thead>\n' +
+
+          '<!-- thead class="en"><tr>\n' +
+          '<th>Date</th><th>Title</th>'+
+          '<th>Version</th><th>Author</th><th>Status</th><th>...</th>\n' +
+          '</tr></thead -->\n' +
+
+          '<tbody>\n'
+        );*/
+
+        $.each(response, function(i, obj) {
+          var date = obj.createdAt.replace(/^(.*)T(.*)(\..*)/, '$1 $2');
+          var url;
+          var title = obj.schema.description.substring(0,140) + " [...]";
+          if (obj.status === "external") {
+            url = obj.uri;
+          } else {
+            url = schemaWS_URL + '?$single&$filter=createdAt $eq ' + obj.createdAt;
+          }
+          // TODO: library to format Table: https://www.sitepoint.com/12-amazing-jquery-tables/
+          // * Dynatable: filtering, sorting, pagination, works out of the box - xx kb
+          // * https://www.datatables.net/
+          $('#listOfSchemas').append(
+            '\n<tr>\n' +
+            '<td>' + date + '</td>' +//
+            '<td><a href="' + url + '" title="' + title + '"> ' + obj.schema.title + '</a></td>' +
+            '<td>' + obj.schema.version + '</td>' +  //
+            '<td>' + obj.schema.author + '</td>' +   //
+            '<td>' + obj.status + '</td>' +          //
+            '<td><button class="importUrlItem" value="' + url + '">'+
+            'import</button></td>' +
+            '</tr>\n'
+          );
+        });
+        //$('#listSavedSchemas').append('</tbody>\n');
+        $("button.importUrlItem").on("click", function () {
+          console.log("importUrlItem 1. url: " + $(this).attr('value'));
+          importSchemaFromURL($(this).attr("value"));
+          //TODO: close window when schema imported?
+        });
+      })
+      .error( function(e) {
+        console.warn("Schema list error", e);
+      });
+      $("#listOfSavedSchemas").dialog( "open" );
+      //$('#schemasTable').dynatable();
+      //$('#schemasTable').DataTable();
+
+    }
+
+    $("#listOfSavedSchemas").dialog({
+      autoOpen: false,
+      classes: { "ui-dialog": "listOfSavedSchemas" },
+      open: function (event, ui) {
+          console.log($("#listOfSavedSchemas table")[0]);
+          /*if (!$.fn.DataTable.isDataTable($("#listOfSavedSchemas table")[0])) {
+            $("#listOfSavedSchemas table").dataTable({
+                "bJQueryUI": true,
+                "sPaginationType": "full_numbers",
+                "aaSorting": []
+            });
+          }/**/
+        }
+    });/* */
+
+    $("#listOfSavedSchemas table").dataTable({
+        "bJQueryUI": true,
+        "sPaginationType": "full_numbers",
+        "aaSorting": []
+    });/**/
+
+    // Import from URL
+    function importSchemaFromURL(url) {
+      console.log("========= importSchemaFromURL. 1");
+      // test if content has already been modified
+      if (isContentModified === true) {
+        var confirmBlock =
+          '<div class="confirm">' +
+          '<span class="fr">Contenu modifié, poursuivre ?</span>\n' +
+          '<span class="en">Content modified. Going further?</span>\n' +
+          '</div>';
+        $(confirmBlock).dialog({
+          modal: true,
+          width: 'auto',
+          buttons: {
+            OK: function () {
+              proceedImportSchemaUrl(url);
+              $(this).dialog('destroy');
+            },
+            Cancel: function () {
+              $(this).dialog('destroy');
+              return;
+            }
+          }
+        });
+      } else {
+        proceedImportSchemaUrl(url);
+      }
+    }
+
+
+    /**
+     * function isValidJSON - Tell if a string is a valid JSON.
+     *
+     * @param {string} jsonString
+     * @return {boolean} true if it's a valid JSON
+     */
+    function isValidJSON (jsonString) {
+      try {
+        JSON.parse(jsonString);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    }
+
+
+    function proceedImportSchemaUrl(url) {
+      console.log("proceedImportSchemaFromURL. 1 url: " + url);
+      $.get(url, function(resultedSchema) {
+        // test if resultedSchema is an object or a string
+        var res;
+        var normalisedJSON;
+
+        // gist emit a string but other services emit "application/json" (an object)
+        if (typeof resultedSchema === "string") {
+          console.log("proceedImportSchemaFromURL. 1.1: string");
+          if (isValidJSON(resultedSchema)) {
+            // normalise JSON
+            normalisedJSON = JSON.parse(resultedSchema);
+          } else {
+            validSchemaErrorBlock =
+              '<div class="confirm">' +
+              '<span class="fr">Le schéma à importer n\'est pas valide.</span>' +
+              '<span class="en">Invalid schema error.</span>' +
+              '</div>';
+            $(confirmBlock).dialog({
+              modal: true,
+              width: 'auto',
+              buttons: {
+                OK: function () {
+                  $(this).dialog('destroy');
+                }
+              }
+            });
+            return;
+          }
+
+        // express-nedb-rest is returning [ { "schema": {} } ]
+        } else if (Array.isArray(resultedSchema)) {
+          console.log("proceedImportSchemaFromURL. 1.2: array");
+          normalisedJSON = resultedSchema[0];
+
+        } else {
+          console.log("proceedImportSchemaFromURL. 1.3: object");
+          normalisedJSON = resultedSchema;
+        }
+
+        //TODO: before loading, if schema isFromRepo,
+        // delete normalisedJSON._id, .uri or .drafturi, .status?????
+
+        // Load schema in the editor
+        res = JSON.stringify(normalisedJSON, null, '  '); // 2 spaces indentation
+        console.log("resultedSchema: " + res.substring(0,40) +
+          " -- " + JSON.stringify(normalisedJSON).substring(0,40));
+        $("#data").text(res); // TODO: unneeded?
+        myCodeMirror.setValue(res);
+        isContentModified = false; // At the stage the content is new and, thus, unmodified
+
+        // Set importedSchema to the new loaded schema
+         // normalise schema to deal with the "schema": {} or not cases
+        var normalisedSchema = normaliseSchema(normalisedJSON);
+        importedSchema = normalisedSchema;
+
+        // If the imported schema comes from outside the current repository, add it
+        if (isFromRepo(importedSchema.schema.uri, schemaWS_URL) === false)
+          saveSchema(schemaWS_URL, "external", importedSchema);
+
+      })
+      .error(function(e) {
+        console.log("proceedImportSchemaFromURL error: " + e);
+        return;
+      });
+      console.log("proceedImportSchemaFromURL. 2");
+    }
+
+
+    /**
+     * isFromRepo
+     * @param {string} repo : url of the repository
+     * @param {string} url : url
+     * @return {boolean}
+     */
+    function isFromRepo (url, repo) {
+      var e = repo.replace(/([.*+?=!:${}()|\[\]\/\\])/g, "\\$1"); // escape repo url
+      var re = new RegExp('^' + e + '(.*)$', "g");                // build regexp
+      //console.log('Regexp:' + re + '-- url: ' + url);
+      //var found = url.match(re); console.log(found);
+      if (re.test(url) === false) {
+        console.log("isFromRepo. false");
+        return false;
+      } else {
+        console.log("isFromRepo. true");
+        return true;
+      }
+    }
+
+
+
+    /**
+     * Return content of a JSON inside a "schema" property, if it's not already the case
+     *
+     * @param {object} validJSON - Example: { "title": "My Schema" }
+     * @return {object} ret - Example: { "schema": { "title": "My Schema"} }
+     */
+    function normaliseSchema(validJSON) {
+      // { schema: {} } case
+      if (validJSON.schema) {
+        return validJSON;
+      } else {
+        var ret = {};
+        ret.schema = validJSON;
+        return ret;
+      }
+    }
+
+
+
+    function csvLint() {
+      /*
+      * curl -L --data "urls[]=http://ex.com/t.csv&schema=1&schema_url=http://ex.com/schem.json" http://csvlint.io/package.json
+        * { "package": { "url":"http://csvlint.io/package/53a150336373764c17170700" } }
+      * lynx http://csvlint.io/validation/53566ef96373767abf010000
+      */
+      myCodeMirror.save();  // Copy CodeMirror editor content into the textarea.
+      var context = JSON.parse($('#data').val());
+      var csvTestDataUrl = context.example; // URL of a test dataset
+      console.log("csvTestDataUrl: " + csvTestDataUrl);
+      var currentSchemaUrl = uploadGist();
+      $.ajax({
+        type: "POST",
+        url: "http://csvlint.io/package.json",
+        data: "urls[]=" + csvTestDataUrl + "&schema=1&schema_url=" + currentSchemaUrl
+      })
+      .done(function(response) {
+        console.log("response.package.url: " + response.package.url);
+        var re = /^(http.*package\/)(.*)$/g;
+        csvlintPackageId = response.package.url.replace(re, "$2");
+        console.log("csvlintPackageId: " + csvlintPackageId);
+        // Open a new window
+        window.open("http://csvlint.io/validation/" + csvlintPackageId);
+      })
+      .error( function(e) {
+        console.warn("gist save error", e);
+      });/* */
+    }
+
+
+
+    // https://github.com/eligrey/FileSaver.js
+    function downloadJSON() {
+      var jsonBlob = new Blob([$('#data').val()], {type: "application/json;charset=utf-8"});
+      saveAs(jsonBlob, "schema.json");
+    }
+
+
+
+    function downLoadHTML() {
+      process();
+      var htmldocSnip = $('#result').html();
+      var htmldocComplete =
+        '<!DOCTYPE html>\n' +
+        '<html lang="fr">\n' +
+        '<head>\n' +
+        '<meta charset="utf-8">\n' +
+        '<meta http-equiv="x-ua-compatible" content="ie=edge">\n' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+        '<title>' + $('#ts-title').text() + '</title>\n' +
+        '<style>\n' +
+        '  body {\n' +
+        '    font-family: Verdana, Arial, Sans-Serif;\n' +
+        '    padding: 1em;\n' +
+        '  }\n' +
+        '  body * { margin: 0.5em 0em 0.5em 0em }\n' +
+        '  .ts-description-title { margin-top: 1.5em; }\n' +
+        '  .tsf-name {\n' +
+        '    border-bottom: 1px solid blue;\n' +
+        '    margin: 2.5em 0em 1em 0em;\n' +
+        '  }\n' +
+        '</style>\n' +
+        '<link rel="stylesheet" href="schema.css">\n' +
+        '</head>\n\n\n'+
+        '<body>' + htmldocSnip + '</body>\n'+
+        '</html>\n';
+      var htmlBlob = new Blob([htmldocComplete], {type: "text/html;charset=utf-8"});
+      saveAs(htmlBlob, "schema_doc.html");
+    }
+
+
+
+    // https://jsfiddle.net/xzZ7n/4861/
+    function pdfFromHTML() {
+      process();
+      var pdf = new jsPDF('p', 'mm', 'a4');
+      // source can be HTML-formatted string, or a reference
+      // to an actual DOM element from which the text will be scraped.
+      source = stringDivider($('#result_zone')[0], 30, "\n");
+
+      // we support special element handlers. Register them with jQuery-style
+      // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
+      // There is no support for any other type of selectors
+      // (class, of compound) at this time.
+      specialElementHandlers = {
+          // element with id of "bypass" - jQuery style selector
+          '#bypassme': function (element, renderer) {
+              // true = "handled elsewhere, bypass text extraction"
+              return true;
+          }
+      };
+      margins = { top: 25, bottom: 25, left: 22, width: 170 };
+      // all coords and widths are in jsPDF instance's declared units
+      // 'inches' in this case
+      pdf.fromHTML(
+        source, // HTML string or DOM elem ref.
+        20, //margins.left, // x coord
+        22, //margins.top, { // y coord
+        {
+          'width': 170, //margins.width, // max width of content on PDF
+          //'elementHandlers': specialElementHandlers,
+          'pagesplit': true
+        },
+        function (dispose) {
+          // dispose: object with X, Y of the last line add to the PDF
+          //          this allow the insertion of new lines after html
+          pdf.save('Test.pdf');
+        }//,
+        //margins
+      );
+    }
+    function stringDivider(str, width, spaceReplacer) {
+      if (str.length>width) {
+        var p = width;
+        for (;p>0 && str[p]!=' ';p--) {
+        }
+        if (p>0) {
+          var left = str.substring(0, p);
+          var right = str.substring(p+1);
+          return left + spaceReplacer + stringDivider(right, width, spaceReplacer);
+        }
+      }
+      return str;
+    }
+
+
+
+
+
+    $( "#tableSchemaCheatSheet" ).dialog({
+      autoOpen: false,
+      width: 400,
+      appendTo: "#wrap"
+    });
+
+    $( "#opnCheatSheet" ).on( "click", function() {
+      $( "#tableSchemaCheatSheet" ).dialog( "open" );
+    });
+
+    $( "#opnIntro" ).hide();
+
+    $( "#opnIntro" ).on( "click", function () {
+      $( "#intro" ).show();
+      $( "#opnIntro" ).hide();
+      $( "#clIntro" ).show();
+    });
+
+    $( "#clIntro" ).on( "click", function () {
+      $( "#intro" ).hide();
+      $( "#clIntro" ).hide();
+      $( "#opnIntro" ).show();
+    });
+
+
+    $("#csvLint").on("click", function () {
+      $("#csvLintForm").css("display", "block");
+    });
+
+    $(".saveDraft").on("click", function () {
+      saveSchema(schemaWS_URL, "draft");
+    });
+
+    $('#importUrlBtn').on("click", function () {
+      importSchemaFromURL($("#schemaImportUrl").val());
+    });
+
+
+    // If the content of the window is modified
+    myCodeMirror.on("change", function () {
+      if (isContentModified === false) {
+        // TODO: activate "Save draft", "Publish" or "Upload Gist" buttons
+        //window.alert("Doc modifié");
+        isContentModified = true;
+      }
+    });
+
+    // Event management: https://learn.jquery.com/events/handling-events/
+    $(document)
+        .on('click',  '.preview',      process)
+        .on('click',  '.dlHTML',       downLoadHTML)
+        .on('click',  '.dlPDF',        pdfFromHTML)
+        .on('click',  '.csvLint',      csvLint)
+        .on('click',  '.dlJSON',       downloadJSON)
+        .on('click',  '.uplGist',      uploadGist)
+        .on('click',  '.importSchema', listSavedSchemas)
+        .on('click',  '#fullscreen',   fullScreen)
+        .on('click',  '#reduce',       reduce)
+        .on('change', '#select',       setLang);
+
+  } );
+
+
+</script>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/codemirror.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/addon/lint/lint.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.24.2/addon/display/fullscreen.css">
+<style>
+  .CodeMirror pre, .CodeMirror-linenumber { font-size: 1.4rem; }
+  .cm-property { color: #ff5b73 !important; } /* JSON properties */
+  .cm-string, .cm-s-default .cm-string { color: #787dff; }
+  .CodeMirror-activeline-background { background-color: #e8e9ff; }
+  .CodeMirror-matchingbracket { color: #c008b1 !important; font-weight: bold; }
+</style>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spectre.css/0.2.9/spectre.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  .material-icons.md-18 { font-size: 18px; vertical-align: text-top; }
+  .displaynone { display:none; }
+
+  body { font-family: Verdana; font-size:1.33rem; }
+  /* reminder: margin: top left bootom right */
+  h1, h2, h3, h4 { margin-top: 0.2rem; margin-bottom: 0rem; }
+  h1 { font-size: 3rem; }
+  h2 { font-size: 2.5rem; }
+  h3 { font-size: 2rem; }
+  h4 { font-size: 1.5rem; }
+  p { margin: 0 0 0.3rem; line-height: 1.5rem; }
+  ol, ul { margin-top: 0; margin-bottom: 1rem; }
+  ol li, ul li { margin-top: 0.1rem; }
+  sup { font-size: 50%; color: #c80042; }
+  .menu { z-index: 8; /* to let menu behind fullscreen view */ }
+  #wrap {
+    margin: 0rem 1rem 0rem 1em;
+    padding: 1em;
+  }
+
+
+  #header {
+    margin: 0 1rem 1rem 1rem;
+    padding: 1rem; /* border-bottom: 0.1rem solid #747474; /* */
+  }
+  #subtitle { font-style: italic; color: #747474; }
+  /*#languages { float: right; }*/
+
+
+  #intro { margin: 1rem 2rem 1rem 1rem;
+    border: 0.1rem solid #aaa;
+    padding: 1rem;
+    width: 30%;
+    float:left;
+    height: 70vh;
+    overflow: auto;
+  }
+
+
+  #listOfSavedSchemas, .listOfSavedSchemas {
+    min-width: 60%;
+  }
+
+
+  #schemaImport {
+    margin: 2rem 1rem 0 1rem; padding: 1rem; background-color: #ccc;
+    overflow: hidden;
+  }
+  #schemaImportUrl { width: 50%; } /* Input field width */
+  #schema_form { padding-bottom: 1rem; }
+  .schema_form_menu { display: flex;
+    margin: 0 1rem 0 1rem;
+    justify-content: flex-end;
+    border: 1px solid black;
+  }
+
+
+  #fullscreen { z-index: 0; /* to see buton in fullscreen view */ }
+  #reduce { display: none; position: fixed; top: 5px; right: 15px; z-index:998; }
+  #data { display: none; }
+  .CodeMirror-wrap { margin: 0 1rem 0 1rem;
+    border: 0.05rem solid;
+    /*height: ; /* */
+    height: 60vh;
+  }
+
+  .menu { display: none; }
+  .question { padding-top: 1.5rem; }
+
+
+  #result_zone { padding: 1rem; margin-top: 1em; display: none; }
+  .btn { margin-left: 1rem; margin-right: 1rem;  float:left;   overflow: hidden;
+  }
+  .tsf-name {
+    border-bottom: 1px solid blue;
+    margin-bottom: 0.5em;
+  } /* */
+
+
+  /* --------------- Print stylesheet ---------------------- */
+  @media print {
+    .no-print, .no-print * { display: none !important};
+    .CodeMirror-wrap { border: 0.1rem solid; };
+  }
+
+  /* --------------- Languages management ------------------ */
+  .en, .fr { display:none; } /* hide all elements with a language class */
+  .en:lang(en), .fr:lang(fr) { display:initial; } /* show those elements that match their language class */
+  div .en:lang(en), p .en:lang(en), li .en:lang(en),
+  div .fr:lang(fr), p .fr:lang(fr), li .fr:lang(fr)
+    { display:block; } /* show those elements that match their language class */
+  span .en:lang(en), em .en:lang(en), a .en:lang(en),
+  span .fr:lang(fr), em .fr:lang(fr), a .fr:lang(fr)
+    { display: inline; }
+
+
+</style>
+
+</head>
+
+
+
+
+
+
+<body>
+
+
+<div id="wrap">
+
+
+<div id="header">
+
+  <div id="languages" class="float-right">
+    <select id="select">
+      <option id="fr" value="fr">Français</option>
+      <option id="en" value="en">English</option>
+    </select>
+  </div>
+
+  <div id="opnCheatSheet" class="float-right">
+      <button class="fr">Antisèche</button>
+      <button class="en">Cheat sheet</button>
+  </div>
+
+  <div id="opnIntro" class="float-right">
+      <button class="fr">Intro</button>
+      <button class="en">Intro</button>
+  </div>
+  <div id="clIntro" class="float-right">
+      <button class="fr">Intro</button>
+      <button class="en">Intro</button>
+  </div>
+
+  <h1>CSV Documentor <sup>alpha</sup></h1>
+  <p id="subtitle">
+    <span class="fr">Documenter des schémas de données</span>
+    <span class="en">Schema documentation generator</span>
+  </p>
+
+</div>
+
+
+
+<div id="intro">
+  <div class="fr">
+    <p>Grace à cet outil, vous pouvez faire d'une pierre deux coups : spécifier précisément les contenus de votre jeu de données (à l'aide d'un format compatible <a href="http://specs.frictionlessdata.io/table-schema/">Table Schema</a>) et créer une documentation extraite de cette spécification.</p>
+    <ol>
+      <li>concevez votre schéma dans <a href="#schema">l'éditeur ci-dessous</a> (en vous inspirant du code déjà proposé)</li>
+      <li>générez votre documentation HTML et téléchargez votre schéma finalisé</li>
+      <li>à l'aide du schéma ainsi créé, vous pouvez validez votre jeu de données correspondant avec l'outil <a href="http://csvlint.io/">CSV Lint</a></li>
+      <li>sur votre entrepôt préféré, publiez votre jeu de données, son schéma et sa documentation HTML</li>
+    </ol>
+    <p>Cet outil est présenté à titre de maquette. Beaucoup d'aspects sont fonctionnels mais :</p>
+    <ul>
+      <li>le schéma présenté ci-dessous n'est pas complètement normalisé (seule la partie "fields" est reconnue par CSV Lint et compatible Table Schema)</li>
+      <li>le jeu de données est un exemple qui n'a fait l'objet d'aucune discussion et ne saurait être pris pour un standard</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p>Let documentation and data stay closed together! With this simple tool, you can specify a data schema (based on <a href="http://specs.frictionlessdata.io/table-schema/">Table Schema</a>) and produce a nice documentation from the schema.</p>
+  </div>
+</div>
+
+
+
+<!-- Table Schema Cheat Sheet -->
+<div id="tableSchemaCheatSheet" title="Antisèche">
+  <div class="fr">
+    <h3>Antisèche</h3>
+    <ul>
+      <li><code>title</code>* : titre du schéma (seul champ obligatoire)</li>
+      <li><code>author</code> : auteur du schéma ; une ou des personnes et/ou une ou des organisations</li>
+      <li><code>publisher</code> : éditeur du schéma ; une ou des organisations, ou une ou des personnes</li>
+      <li><code>contributor</code> : liste des contributeurs à l'élaboration du schéma</li>
+      <li><code>version</code> : version du schéma (format libre)</li>
+      <li><code>created</code> : date de publication schéma (au format ISO-8601 : AAAA-MM-JJ)</li>
+      <li><code>description</code> : description du schéma en quelques phrases</li>
+      <li><code>homepage</code> : URL de la page d'accueil relative au schéma</li>
+      <li><code>uri</code> : URL du schéma proprement dit</li>
+      <li><code>previous</code> : URL de la version précédente de ce schéma</li>
+    </ul>
+  </div>
+  <div class="en">
+    <h3>Cheat sheet</h3>
+    <ul>
+      <li><code>title</code>*: the human-readable title of the schema. The only required property.</li>
+      <li><code>author</code>: is the author of the schema ; one or more people and/or one or more organisations</li>
+      <li><code>publisher</code>: is the publisher of the schema ; one or more organisations or one or more people</li>
+      <li><code>contributor</code>: is a list of contributors of this schema</li>
+      <li><code>version</code>: version number of the schema to let people be sure they talk about the same thing</li>
+      <li><code>created</code>: the release date of the schema (ISO-8601 format: YYYY-MM-DD)</li>
+      <li><code>description</code>: where authors can describe the schema in a few sentences; <code>description</code> is highly recommended; it can be a place to use keywords with #hashtags; Markdown format is encouraged</li>
+      <li><code>homepage</code>: the home on the web that is related to this schema (not the schema itself); it's a well formed URL</li>
+      <li><code>uri</code>:  web address where the schema can be retrieved</li>
+      <li><code>previous</code>: is the URL of the current schema previous version (allowing tools to produce schema diffs)</li>
+    </ul>
+  </div>
+</div>
+
+
+
+<div id="listOfSavedSchemas" title="Schemas">
+  <!-- Here goes list generated from javascript listSavedSchemas() function -->
+  <table id="schemasTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Titre</th>
+        <th>Version</th>
+        <th>Auteur</th>
+        <th>Statut</th>
+        <th>...</th>
+      </tr>
+    </thead>
+    <!-- thead class="en"><tr>\n' +
+    '<th>Date</th><th>Title</th>'+
+    '<th>Version</th><th>Author</th><th>Status</th><th>...</th>\n' +
+    '</tr></thead -->
+    <tbody id="listOfSchemas">
+    </tbody>
+  </table>
+</div>
+
+
+
+<div id="schemaImport">
+  <span class="fr">Entrer optionnellement l'URL d'un schéma existant</span>
+  <span class="en">Enter optional schema URL</span>
+  <input type="text" id="schemaImportUrl" value="https://gist.githubusercontent.com/CharlesNepote/686dd3f0da30b43c3c82c773ebd5c020/raw/0db72afc49540896c6ad7a411bc9ef5cff2772ea/prenom-schema.0.1.json">
+  <button id="importUrlBtn">
+    <span class="fr">Télécharger</span>
+    <span class="en">Download</span>
+  </button>
+</div>
+
+
+
+<div id="schema_form">
+  <div class="schema_form_menu">
+    <!--h3 id="schema">
+      <span class="fr">Schéma au format JSON</span>
+      <span class="en">JSON Schema</span>
+    </h3 -->
+    <!-- Import -->
+
+
+    <div class="csvLint">
+      <a href="#" class="btn btn-link">
+        <i class="material-icons md-18">check_circle</i>
+        <span class="fr">CSV Lint</span>
+        <span class="en">CSV Lint</span>
+        <!-- i class="icon-caret"></i -->
+      </a>
+      <div class="csvLintForm displaynone">
+        <span class="fr">Entrer l'URL d'un jeu de données au format CSV<br/></span>
+        <span class="fr">Par défaut celle donnée dans le champ "example"<br/></span>
+        <span class="en">Enter optional schema URL<br/></span>
+        <span class="en">Default to "example" field content.<br/></span>
+        <input type="text" id="csvUrl" value="">
+        <button id="csvLintBtn">
+          <span class="fr">Lancer la validation</span>
+          <span class="en">Launch lint process</span>
+        </button>
+      </div>
+    </div>
+
+
+    <div class="saveDraft">
+      <a href="#" class="btn btn-link">
+        <i class="material-icons md-18">cloud_upload</i>
+        <span class="fr">Enregistrer (brouillon)</span>
+        <span class="en">Save draft</span>
+        <!-- i class="icon-caret"></i -->
+      </a>
+    </div>
+
+
+    <div class="uplGist">
+      <a href="#" class="btn btn-link">
+        <i class="material-icons md-18">cloud_upload</i>
+        <span class="fr">Gist</span>
+        <span class="en">Gist</span>
+        <!-- i class="icon-caret"></i -->
+      </a>
+    </div>
+
+
+    <div class="importSchema">
+      <a href="#" class="btn btn-link">
+        <i class="material-icons md-18">cloud_download</i>
+        <span class="fr">Import</span>
+        <span class="en">Import</span>
+      </a>
+    </div>
+
+
+    <div class="preview">
+      <a href="#" class="btn btn-link">
+        <i class="material-icons md-18">visibility</i>
+        <span class="fr">Prévisu HTML</span>
+        <span class="en">HTML Preview</span>
+        <!-- i class="icon-caret"></i -->
+      </a>
+    </div>
+
+    <!-- Export -->
+    <div class="dropdown dropdown-right">
+      <a href="#" class="btn btn-link dropdown-toggle">
+      <span class="fr">Export</span>
+      <span class="en">Export</span>
+      <i class="icon-caret"></i>
+      </a>
+      <!-- menu component -->
+      <ul class="menu">
+        <li>
+          <a class="btn dlHTML">
+            <span class="fr">Télécharger la documentation au format HTML</span>
+            <span class="en">Download HTML doc</span>
+          </a>
+        </li>
+        <li>
+          <a class="btn dlPDF tooltip tooltip-top" data-tooltip="Non fonctionnel">
+            <span class="fr">Télécharger la documentation PDF</span>
+            <span class="en">Download PDF doc</span>
+          </a>
+        </li>
+        <li>
+          <a class="btn dlJSON">
+            <span class="fr">Télécharger le fichier JSON</span>
+            <span class="en">Download JSON file</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+
+    <button id="fullscreen" title="fullscreen"><i class="material-icons">fullscreen</i></button>
+    <button id="reduce">_</button>
+  </div>
+  <textarea id="data">
+  {
+    "title": "Spécification de la liste annuelle des prénoms des nouveaux-nés",
+    "author": "Charles Nepote &lt;charles.nepote@fing.org&gt;",
+    "contributor": "Simon Chignard, Bernadette Kessler, Christian Quest",
+    "version": "0.6beta",
+    "created": "2017-03-28",
+    "description": "La liste annuelle des prénoms des nouveaux-nés est un jeu de données simple et très apprécié du public. Il consiste en une liste de prénoms avec l'occurence de chacun pour une année donnée. Les prénoms listés correspondent au premier prénom donné dans chaque acte de naissance de l'état-civil.\n\n Ce schéma décrit le détail de chaque champ. Pour chacun, nous fournissons également l'expression rationnelle informatique (ou \"regexp\") qui permet de contrôler le contenu du champ.",
+    "homepage": "https://gist.github.com/CharlesNepote/26126a30adddc1781cb652b2af164ea8",
+    "uri": "https://gist.githubusercontent.com/CharlesNepote/26126a30adddc1781cb652b2af164ea8/raw/",
+    "previous": "https://gist.githubusercontent.com/CharlesNepote/26126a30adddc1781cb652b2af164ea8/raw/f64e24afd4c7ee5dfe8453dff209fd52d536d59a/prenom-schema.json",
+    "example": "https://gist.githubusercontent.com/CharlesNepote/94983541b2ca3e84f29b616d1ffa29fa/raw/674351f4b41ed0b581099378d38071c7a8dd711d/prenom.csv",
+    "fields": [
+      {
+        "name": "CODE_INSEE",
+        "title": "Code INSEE",
+        "description": "Code INSEE de la commune où les prénoms sont enregistrés à l'état-civil, c'est-à-dire le lieu de naissance. Le lieu de naissance peut être différent du lieu de résidence des parents, comme cela peut être le cas pour les enfants nés dans une maternité. Issu du Code officiel géographique, le \"code INSEE\" est composé de 5 caractères alphanumériques (les deux premiers correspondent au département et peuvent donc contenir les lettres A et B, utilisées pour la Corse).",
+        "type": "string",
+        "examples": "06088, 2B002 (pour une commune corse)",
+        "constraints": {
+          "required": true,
+          "pattern": "^([013-9]\\d|2[AB1-9])\\d{3}$"
+        }
+      },
+      {
+        "name": "COMMUNE",
+        "title": "Commune concernée",
+        "type": "string",
+        "description": "Le renseignement de ce champ est facultatif. Il permet cependant de faciliter l'usage des données, notamment par le grand public.",
+        "examples": "Rennes, Marseille, Brocas",
+        "constraints": {
+          "required": false,
+          "pattern": "^(Le |La |Les |Los |Aux |L'|)([A-ZÉÇŒÈÎ])(((-| | - |')[A-ZÉÇŒÈÎ])|('|-| |)[a-zàâéèêëïîÿôûüœç])*( \\([A-Z][a-z]*\\)|)$"
+        }
+      },
+      {
+        "name": "SEXE_ENFANT",
+        "title": "Sexe relatif au prénom",
+        "type": "string",
+        "description": "Sexe correspondant au prénom : M ou F ou I, respectivement pour masculin, féminin ou intersexué/indéterminé. L'information est importante car certains prénoms sont aussi bien masculins que féminin, comme Camille. \"I\" signale un genre spécifiquement intersexué ou indéterminé ; il ne mentionne pas un sexe inconnu. \"I\" n'est théoriquement pas encore utilisé en France mais plusieurs pays on créé un tel statut et de nombreux éléments suggèrent une évolution prochaine du droit en France (affaires judiciaires, recommandations d'experts juridiques, demandes des associations, etc.).",
+        "constraints": {
+          "required": true,
+          "pattern": "^(M|F|I)$"
+        },
+        "examples": "F"
+      },
+      {
+        "name": "PRENOM",
+        "title": "Prénom",
+        "description": "Prénom de nouveau(x)-né(s) constaté comme premier prénom dans les actes d'état-civil de l'année correspondante. Un acte de naissance peut désigner un nouveau-né avec plusieurs prénoms et le législateur a prévu que \"tout prénom inscrit dans l'acte de naissance peut être choisi comme prénom usuel.\" (article 52 du Code Civil). La plupart du temps le premier prénom est le prénom d'usage initialement choisi par le(s) parent(s). Cette spécification ne retient donc que le premier prénom : si un nouveau-né est appelé \"Armelle Julia Blanche\", seul \"Armelle\" sera retenu pour constituer ce jeu de données. Un prénom composé comme Marie-Jeanne compte pour un prénom complet. Le site service-public.fr signale que \"l'alphabet utilisé doit être celui qui sert à l'écriture du français. Les caractères alphabétiques étrangers ne sont donc pas autorisés (par exemple le « ñ »)\". Outre les caractères alphabétiques, un prénom peut posséder un trait d'union, voire deux, comme dans Lou-Anne ou Mohamed-El-Amine. Des prénoms peuvent posséder une apostrophe comme dans Gwenc'Hlan ou N'Deye, voire peut-être deux. Nous considérons aussi qu'un prénom pourrait terminer voire débuter par une apostrophe -- cette dernière étant parfois utilisé en français pour marquer la suppression de la finale ou du début d'un mot, comme dans Boul' Mich'.",
+        "type": "string",
+        "constraints": {
+          "required": true,
+          "pattern": "^'?[A-ZÉÀÈÙÄËÏÖÜŸÂÊÎÔÛŶÇ][a-zéàèùäëïüöÿâêîôûŷç]*('|(('?[A-ZÉÀÈÙÄËÏÖÜŸÂÊÎÔÛŶÇ][a-zéàèùäëïüöÿâêîôûŷç]*)|(-[A-ZÉÀÈÙÄËÏÖÜŸÂÊÎÔÛŶÇ][a-zéàèùäëïüöÿâêîôûŷç]*)){1,2}|)$"
+        },
+        "examples": "\"Marianne\", \"Jean-Philippe\", \"Gwenc'Hlan\", \"O'Ryan\", \"Mohamed-El-Amine\""
+      },
+      {
+        "name": "NOMBRE_D_OCCURRENCES",
+        "title": "Nombre d'occurrences",
+        "description": "Nombre d'occurrences du prénom pour l'année correspondante. Tous les prénoms sont comptabilisés, y compris les prénoms uniques -- un seuil minimum est exclu car il conduirait à passer sous silence une importante part des naissances, voire la totalité dans les petites communes. La valeur de ce champ est donc un nombre entier d'un à 6 chiffres maximum, 0 étant exclu.",
+        "type": "string",
+        "constraints": {
+          "required": true,
+          "pattern": "^[1-9]\\d{0,5}$"
+        },
+        "examples": "\"1\", \"102\", \"5\", \"10\", \"1053\""
+      },
+      {
+        "name": "ANNEE",
+        "title": "Année",
+        "description": "Année de relevé, sur quatre chiffres.",
+        "type": "date",
+        "constraints": {
+          "required": true,
+          "pattern": "^[1-2]\\d\\d\\d$"
+        },
+        "examples": "\"2005\", \"1992\", \"1886\""
+      }
+    ]
+  }
+  </textarea>
+</div>
+
+
+
+<!-- ******************* Buttons ************************* -->
+<!-- div class="menu">
+  <div class="process fr">
+    <a class="btn preview">Prévisualisation HTML</a>
+    <a class="btn dlHTML">Télécharger la documentation au format HTML</a>
+    <a class="btn dlPDF tooltip tooltip-top" data-tooltip="Non fonctionnel">Télécharger la documentation PDF</a>
+    <a class="btn dlJSON">Télécharger le fichier JSON</a>
+  </div>
+  <div class="process en">
+    <a class="btn preview">HTML preview</a>
+    <a class="btn dlHTML">Download HTML doc</a>
+    <a class="btn dlPDF">Download PDF doc</a>
+    <a class="btn dlJSON">Download JSON file</a>
+  </div>
+</div -->
+
+
+
+<!-- ******************* Results ************************* -->
+<!-- Template. See documentation at http://handlebarsjs.com/ -->
+<script id="entry-template" type="text/x-handlebars-template">
+  {{#if title}}<h2 id="ts-title" style="color:blue">{{title}}</h2>{{/if}}
+  <p>
+    {{#if version}}<span class="ts-version">Version {{version}}</span>, {{/if}}
+    {{#if created}}<span class="ts-created">{{created}}</span>{{/if}}
+  </p>
+  {{#if author}}<p class="ts-author">{{author}}</p>{{/if}}
+  {{#if publisher}}<p class="ts-publisher">{{publisher}}</p>{{/if}}
+  {{#if contributor}}<p class="ts-contributor">Avec la contribution de {{contributor}}</p>{{/if}}
+  {{#if homepage}}<p class="ts-hmpage">Page de cette spécification :
+    <a href="{{homepage}}">{{homepage}}</a></p>{{/if}}
+  {{#if uri}}<p class="ts-uri">Schéma technique au format JSON :
+    <a href="{{uri}}">{{uri}}</a></p>{{/if}}
+  {{#if previous}}<p class="ts-previous">Précédente version du schéma technique :
+    <a href="{{previous}}">{{previous}}</a></p>{{/if}}
+
+  {{#if description}}
+  <h3 class="ts-description-title">Description</h3>
+  <p class="ts-description">{{description}}</p>
+  {{/if}}
+
+  <div class="ts-fields">
+    {{#each fields}}
+    <h4 class="tsf-name">Champ {{name}}</h4>
+    <p class="tsf-title"><strong>{{title}}</strong></p>
+    <p class="tsf-description">{{description}}</p>
+    <ul>
+      <li class="tsf-type">Type : {{type}}</li>
+      <li class="tsf-regexp">Regexp de validation : <code class="regexp">{{constraints.pattern}}</code></li>
+      <li class="tsf-examples">Exemple(s) : {{examples}}</li>
+    </ul>
+    {{/each}}
+  </div>
+</script>
+
+<script id="entry-template2" type="text/x-handlebars-template">
+  {{#if schema.title}}<h2 id="ts-title" style="color:blue">{{schema.title}}</h2>{{/if}}
+  <p>
+    {{#if schema.version}}<span class="ts-version">Version {{schema.version}}</span>, {{/if}}
+    {{#if schema.created}}<span class="ts-created">{{schema.created}}</span>{{/if}}
+  </p>
+  {{#if schema.author}}<p class="ts-author">{{schema.author}}</p>{{/if}}
+  {{#if schema.publisher}}<p class="ts-publisher">{{schema.publisher}}</p>{{/if}}
+  {{#if schema.contributor}}<p class="ts-contributor">Avec la contribution de {{schema.contributor}}</p>{{/if}}
+  {{#if schema.homepage}}<p class="ts-hmpage">Page de cette spécification :
+    <a href="{{schema.homepage}}">{{schema.homepage}}</a></p>{{/if}}
+  {{#if schema.uri}}<p class="ts-uri">Schéma technique au format JSON :
+    <a href="{{schema.uri}}">{{schema.uri}}</a></p>{{/if}}
+  {{#if schema.previous}}<p class="ts-previous">Précédente version du schéma technique :
+    <a href="{{schema.previous}}">{{schema.previous}}</a></p>{{/if}}
+
+  {{#if schema.description}}
+  <h3 class="ts-description-title">Description</h3>
+  <p class="ts-description">{{schema.description}}</p>
+  {{/if}}
+
+  <div class="ts-fields">
+    {{#each schema.fields}}
+    <h4 class="tsf-name">Champ {{name}}</h4>
+    <p class="tsf-title"><strong>{{title}}</strong></p>
+    <p class="tsf-description">{{description}}</p>
+    <ul>
+      <li class="tsf-type">Type : {{type}}</li>
+      <li class="tsf-regexp">Regexp de validation : <code class="regexp">{{constraints.pattern}}</code></li>
+      <li class="tsf-examples">Exemple(s) : {{examples}}</li>
+    </ul>
+    {{/each}}
+  </div>
+</script>
+
+
+<!-- results -->
+<div id="result_zone" style="background-color: #fff2b9">
+  <div id="result"></div>
+</div>
+
+<!-- /wrap -->
+</div>
+
+</body>
+</html>
