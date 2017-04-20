@@ -8,7 +8,11 @@ It is an extension of [Table Schema](https://specs.frictionlessdata.io/table-sch
 
 This tool is already usable while at early stage. CSV Schema Playground is a single page application all written in HTML, CSS and Javascript: just copy the file somewhere and it works! (You only have to be connected to the internet.)
 
-If you want to save schemas, you will have to install the server part with nodejs.
+If you want to save schemas, you will have to install the server part with nodejs:
+```
+$ npm install
+$ node main.js
+```
 
 
 # CSV Schema Playground : jouer avec le standard Table Schema
@@ -19,6 +23,13 @@ Table Schema est un format qui permet de décrire le contenu d'un jeu de donnée
 Un fichier Table Schema est exprimé au format JSON.
 
 Ce générateur prend en entrée un fichier au format Table Schema. Il produit la documentation correspondante.
+
+Si vous souhaitez enregistrer vos schémas, vous devez installer la partie serveur, basée sur nodejs :
+```
+$ npm install
+$ node main.js
+```
+
 
 # changelog
 
