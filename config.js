@@ -2,10 +2,10 @@ var config = {};
 
 /**
  * http root of the app. Example:
- * config.port = "/";
- * config.port = "/rest";
+ * config.path = "/";
+ * config.path = "/rest";
 **/
-config.path = "/";
+config.path = "/rest";
 
 /**
  * TCP port. Example:
