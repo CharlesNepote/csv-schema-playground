@@ -27,5 +27,5 @@ app.use(config.path, restApi);
 app.use(express.static('public'));
 
 app.listen(config.port, function () {
-  console.log('you may use nedb rest api at port 8100');
+  console.log('you may use nedb rest api at port ' + config.port);
 });
