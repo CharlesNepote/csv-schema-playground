@@ -2,7 +2,7 @@ var express = require('express'); // https://github.com/expressjs/express
 var cors = require('cors');       // https://github.com/expressjs/cors
 var nedb = require('nedb');       // https://github.com/louischatriot/nedb/
 var expressNedbRest = require('express-nedb-rest'); // https://github.com/bi-tm/express-nedb-rest
-var config = require('./config'); // file to store configuration variables
+var config = require('./config.server'); // file to store configuration variables
 
 // setup express app
 var app = express();

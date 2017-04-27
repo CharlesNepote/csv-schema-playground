@@ -1,12 +1,12 @@
 /**
+ * Config variables for browser app.
  * This file is an example. To be functional, the app should have a config.browser.js file
  * based on this example.
  */
-
 var config = {};
 
 /**
- * http root of the app. Examples:
+* root path of the rest api. Examples:
  * config.path = "/";
  * config.path = "/rest";
 **/
@@ -20,7 +20,7 @@ config.path = "/rest/schemas";
 config.port = ":8100";
 
 /**
- * Server. Examples
+ * Server URL (without port). Examples:
  * config.server = "http://localhost";
  * config.server = "http://example.com";
 **/
