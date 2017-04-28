@@ -15,12 +15,12 @@ config.path = "/rest/schemas";
 /**
  * TCP port. Examples:
  * config.port = ":8100";
- * config.port = process.env.PORT; // on cloud9 infrastructure
+ * config.port = ":8080";
 **/
 config.port = ":8100";
 
 /**
- * Server URL (without port). Examples:
+ * Server URL (without port, without trailing slash). Examples:
  * config.server = "http://localhost";
  * config.server = "http://example.com";
 **/
