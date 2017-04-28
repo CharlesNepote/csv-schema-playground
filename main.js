@@ -2,6 +2,7 @@ var express = require('express'); // https://github.com/expressjs/express
 var cors = require('cors');       // https://github.com/expressjs/cors
 var nedb = require('nedb');       // https://github.com/louischatriot/nedb/
 var expressNedbRest = require('express-nedb-rest'); // https://github.com/bi-tm/express-nedb-rest
+var package = require('./package.json');
 var config = require('./config.server'); // file to store configuration variables
 
 // setup express app
@@ -24,8 +25,16 @@ restApi.addDatastore('schemas', datastore);
 app.use(config.path, restApi);
 
 // setup express server to serve static files
-app.use(express.static('public'));
+if (config.appPath === "" || config.appPath === "/") config.appPath = "";   // in cas it's not defined in config.server.js
+app.use(config.appPath, express.static('public'));
 
 app.listen(config.port, function () {
-  console.log('you may use nedb rest api at port ' + config.port);
+  var sep = ":";
+  if (config.port === "80" || config.port === "8080") { sep = ""; config.port = ""; }
+  console.log(
+    package.name + ' ' +
+    package.version + ' \n' +
+    '-- you may use nedb rest api at ' + config.domain + sep + config.port + config.path + '\n' +
+    '-- you can open app at ' + config.domain + sep + config.port + config.appPath + '/index.html'
+  );
 });
