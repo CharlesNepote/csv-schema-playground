@@ -17,7 +17,7 @@ config.datastore = "schemas";
  * config.path = "/";
  * config.path = "/rest";
  */
-config.path = "/rest";
+config.apiPath = "/rest";
 
 /**
  * TCP port. Examples:

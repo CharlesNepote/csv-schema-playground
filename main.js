@@ -24,7 +24,7 @@ var datastore = new nedb({ filename: "schemas.db",  autoload: true, timestampDat
 // database automatic compaction interval, in millisecond (1000 * 60 * 60 * 24 = 24h)
 datastore.persistence.setAutocompactionInterval(1000 * 60 * 60 * 24);
 
-//
+// /draft/202017-04-12T13:59:49.953Z is a clean URL to access an existing draft document
 app.get('/draft/:id', function(req, res, next) {
   // /draft/202017-04-12T13:59:49.953Z
   req.url = encodeURI(
@@ -36,9 +36,12 @@ app.get('/draft/:id', function(req, res, next) {
   next();
 }); /* */
 
+// /draft/ is a URL providing all documents with "status": "draft"
 app.get('/draft/', function(req, res, next) {
-  req.url = encodeURI(config.apiPath + '/' + config.datastore +'?$filter=status $eq draft');
-  req.query.$filter = 'status $eq draft';
+  req.url = encodeURI(
+    config.apiPath + '/' + config.datastore +
+    '?$filter=status $eq draft');                // URL rewrite
+  req.query.$filter = 'status $eq draft';        // Query filter
   console.log('http://localhost:' + config.port + req.url);
   next();
 }); /* */
