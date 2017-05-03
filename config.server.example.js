@@ -6,6 +6,13 @@
 var config = {};
 
 /**
+ * Datastore name. Examples:
+ * config.datastore = "fruits";
+ * config.datastore = "vegetables";
+ */
+config.datastore = "schemas";
+
+/**
  * root path of the app. Examples:
  * config.path = "/";
  * config.path = "/rest";
